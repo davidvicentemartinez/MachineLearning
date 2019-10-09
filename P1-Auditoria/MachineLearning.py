@@ -9,6 +9,7 @@ from __future__ import print_function
 import pandas as pd
 import scipy.stats 
 import matplotlib.pyplot as plt
+import math as m
 pd.__version__
 
 mushroom_dataframe = pd.read_csv("o-database", sep=",")
@@ -22,6 +23,25 @@ for att in mushroom_dataframe.columns.values:
     i = i+1
 fig.set_size_inches(18.5, 18.5, forward=True)
 fig.show()
+
+#%%
+for att in mushroom_dataframe.columns:
+    if(att != 'class'):        
+        tab = pd.crosstab(index = mushroom_dataframe['class'], columns = mushroom_dataframe[att], margins=True)
+        rows = tab.shape[0]
+        columns = tab.shape[1]
+        sum = 0
+        for i in range(0,rows-2):
+            for j in range(0,columns-2):
+                p1 = tab.iloc[i][j] / tab.iloc[rows-1][columns-1]
+                p2 = tab.iloc[i][j] / tab.iloc[i][columns-1]
+                p3 = tab.iloc[i][j] / tab.iloc[rows-1][j]
+                x = p1 * m.log10(p1/(p2*p3))
+                if(m.isnan(x)):
+                    x = 0
+                sum += x
+        print(str(att), ": ", sum)
+
 
 #%%
 print("Entropy values per category:\n")
